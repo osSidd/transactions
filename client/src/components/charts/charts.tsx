@@ -4,7 +4,7 @@ import PieChart from "./pieChart";
 
 export default function Charts(){
     return (
-        <Box>
+        <Box mt={5}>
             <BarChart/>
             <PieChart/>
         </Box>

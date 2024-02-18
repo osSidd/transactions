@@ -1,57 +1,20 @@
 import { Select, FormControl, MenuItem, InputLabel} from "@mui/material";
+import monthArray from '../static/months'
+import useTransactionContext from "../hooks/useTransactionContext";
+import useTransactionFetch from "../hooks/useTransactionsFetch";
 
 export default function SelectBar(){
 
-    const monthArray = [
-        {
-            month: 'Jan',
-            numeric: 0,
-        },
-        {
-            month: 'Feb',
-            numeric: 1,
-        },
-        {
-            month: 'Mar',
-            numeric: 2,
-        },
-        {
-            month: 'Apr',
-            numeric: 3,
-        },
-        {
-            month: 'May',
-            numeric: 4,
-        },
-        {
-            month: 'Jun',
-            numeric: 5,
-        },
-        {
-            month: 'Jul',
-            numeric: 6,
-        },
-        {
-            month: 'Aug',
-            numeric: 7,
-        },
-        {
-            month: 'Sep',
-            numeric: 8,
-        },
-        {
-            month: 'Oct',
-            numeric: 9,
-        },
-        {
-            month: 'Nov',
-            numeric: 10,
-        },
-        {
-            month: 'Dec',
-            numeric: 11,
-        },
-    ]
+    const {month, dispatch} = useTransactionContext()
+    const {fetchTransactions} = useTransactionFetch()
+
+    function handleChange(mon: number){
+        fetchTransactions(mon)
+        dispatch({
+            type: 'SET_MONTH',
+            payload: mon
+        })
+    }
 
     return (
         <FormControl fullWidth>
@@ -59,9 +22,9 @@ export default function SelectBar(){
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value='Mar'
+                value={month}
                 label="Select month"
-                // onChange={handleChange}
+                onChange={(e: React.ChangeEvent) => handleChange((e.target as HTMLSelectElement).value)}
             >
                {
                 monthArray.map(month => (

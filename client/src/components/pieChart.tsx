@@ -1,7 +1,7 @@
 import * as d3 from 'd3'
 import { useEffect, useRef } from 'react'
 
-export default function PieChart(){
+export default function PieChart({categories}){
     const svgRef = useRef<SVGSVGElement>(null)
 
     useEffect(() => {
@@ -15,15 +15,25 @@ export default function PieChart(){
 
         const svg = d3.select(svgRef.current).attr('width', width).attr('height', height)
 
-        const xScale = d3.scaleBand().domain(['a', 'b']).range([0, width])
-        const yScale = d3.scaleLinear().domain([0, 60]).range([0, height])
+        const pieGenerator = d3.pie().value(d => d.total)
+        const pie = pieGenerator(categories)
 
-        const bottomAxis = d3.axisBottom(xScale)
-        svg?.append('g').call(bottomAxis)
+        const arcGenerator = d3.arc()
+        const arcs = pie.map(p => arcGenerator({
+            innerRadius: 0,
+            outerRadius:25,
+            startAngle: p.startAngle,
+            endAngle: p.endAngle,
+        }))
 
-        const leftAxis = d3.axisLeft(yScale)
-        svg?.append('g').call(leftAxis)
-        
+        const pieContainer = svg.append('g')
+        pieContainer.selectAll('path')
+                    .datum(arcs)
+                    .enter()
+                    .append('path')
+                    .attr('d', d => d)
+                    .attr('fill', 'none')
+                    .attr('stroke', 'gray')
     }
 
     return (

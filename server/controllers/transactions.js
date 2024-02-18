@@ -16,7 +16,7 @@ const seedDB = async () => {
             }
             else{
                 data.forEach(async d => {
-                    await Transaction.create({...d, dateOfSale: new Date(d.dateOfSale).getMonth()})
+                    await Transaction.create({...d, dateOfSale: new Date(d.dateOfSale).getMonth(), date: d.dateOfSale})
                 })
                 console.log('database seeded')
                 return
@@ -43,14 +43,14 @@ const getAllTransactions = async (req, res) => {
 
         const {totalSale, totalSold, totalUnSold} = getStats(transactions)
         const categories = getCategories(transactions)
-        getPriceRange(transactions)
+        const obj = getPriceRange(transactions)
 
         transactions = transactions.slice((page-1)*results, results)
 
         let noOfPages = parseInt(transactions.length/results)
         noOfPages = noOfPages > 0 ? noOfPages : noOfPages + 1
 
-        return res.status(200).json({count: transactions.length, transactions, noOfPages, totalSale, totalSold, totalUnSold, categories, priceRange})
+        return res.status(200).json({transactions, noOfPages, totalSale, totalSold, totalUnSold, categories, priceRange: obj})
     }catch(err){
         return res.status(400).json(err.message)
     }
@@ -81,21 +81,23 @@ const getCategories = (transactions) => {
 
 //get price range
 const getPriceRange = (transactions) => {
+    let rangeObj = [...priceRange]
     transactions.forEach(item => {
-       increment(item)
+       rangeObj = increment(item, rangeObj)
     })
+    return rangeObj
 }
 
-function increment(item){
-    for(let i in priceRange){
-        if(parseInt(i) === priceRange.length - 1)
+function increment(item, rangeObj){
+    for(let i in rangeObj){
+        if(parseInt(i) === rangeObj.length - 1)
         {
-            priceRange[i].total += 1
-            return
+            rangeObj[i].total += 1
+            return rangeObj
         }
-        if(item.price <= priceRange[i].value){
-            priceRange[i].total += 1
-            return
+        if(item.price <= rangeObj[i].value){
+            rangeObj[i].total += 1
+            return rangeObj
         }
     }
 }

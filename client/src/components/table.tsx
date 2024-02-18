@@ -1,59 +1,58 @@
 import Table from '@mui/material/Table';
+import Box from '@mui/material/Box';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import { Typography } from '@mui/material';
+import { Transactions } from '../types';
 
-function createData(
-  name: string,
-  calories: number,
-  fat: number,
-  carbs: number,
-  protein: number,
-) {
-  return { name, calories, fat, carbs, protein };
-}
-
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
-
-export default function TransactionTable() {
+export default function TransactionTable({transactions, noOfPages}: {noOfPages: number, transactions: Transactions[]}) {
   return (
-    <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
-        <TableHead>
-          <TableRow>
-            <TableCell>Dessert (100g serving)</TableCell>
-            <TableCell align="right">Calories</TableCell>
-            <TableCell align="right">Fat&nbsp;(g)</TableCell>
-            <TableCell align="right">Carbs&nbsp;(g)</TableCell>
-            <TableCell align="right">Protein&nbsp;(g)</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow
-              key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-            >
-              <TableCell component="th" scope="row">
-                {row.name}
-              </TableCell>
-              <TableCell align="right">{row.calories}</TableCell>
-              <TableCell align="right">{row.fat}</TableCell>
-              <TableCell align="right">{row.carbs}</TableCell>
-              <TableCell align="right">{row.protein}</TableCell>
+    <Box mt={5}>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              <TableCell>id</TableCell>
+              <TableCell align="right">Title</TableCell>
+              <TableCell align="left">Description</TableCell>
+              <TableCell align="right">Price</TableCell>
+              <TableCell align="right">Category</TableCell>
+              <TableCell align="right">Sold</TableCell>
+              <TableCell align="right">Image</TableCell>
+
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+          </TableHead>
+          <TableBody>
+            {transactions.map((transaction: Transactions) => (
+              <TableRow
+                key={transaction.id}
+                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              >
+                <TableCell component="th" scope="row">
+                  {transaction.id}
+                </TableCell>
+                <TableCell sx={{fontSize:12}} align="left">{transaction.title}</TableCell>
+                <TableCell sx={{fontSize:12}} align="left">{transaction.description}</TableCell>
+                <TableCell align="right">{transaction.price.toFixed(2)}</TableCell>
+                <TableCell sx={{fontSize:12}} align="center">{transaction.category}</TableCell>
+                <TableCell sx={{fontSize:12}} align="center">{transaction.sold ? 'sold out' : 'in stock'}</TableCell>
+                <TableCell align="right">
+                  <Box
+                    component='img'
+                    width={75}
+                    src={transaction.image}
+                  />
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      <Typography mt={2}>Number of pages - {noOfPages}</Typography>
+    </Box>
   );
 }
